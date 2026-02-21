@@ -39,13 +39,13 @@ jobs:
         run: terraform init -reconfigure
 
 
-      - name: Terraform Plan
-        run: terraform plan
+      # - name: Terraform Plan
+      #   run: terraform plan
 
-      - name: Terraform Apply
-        env:
-          GZIP: "false"
-        run: terraform apply -auto-approve
+      # - name: Terraform Apply
+      #   env:
+      #     GZIP: "false"
+      #   run: terraform apply -auto-approve
 
       - name: Terraform Apply
         env:
