@@ -1,4 +1,4 @@
-aws_region="us_east_1"
+aws_region="us-east-1"
 
 upload_bucket_name="devops-accelerator-upload-bucket"
 
