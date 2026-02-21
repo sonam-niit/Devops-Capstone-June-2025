@@ -1,12 +1,11 @@
 terraform {
   required_version = ">= 1.5.0"
 
-# Remote Backend
   backend "s3" {
     bucket         = "devops-accelerator-platform-tf-state-sonam"
     key            = "global/devops-accelerator/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "devops-accelerator-tf-locker" #for locking
+    dynamodb_table = "devops-accelerator-tf-locker"
     encrypt        = true
   }
 }
@@ -55,7 +54,6 @@ resource "aws_s3_bucket" "upload_bucket" {
   force_destroy = true
 }
 
-
 # -----------------------------
 # Lambda: Process Uploaded File
 # -----------------------------
@@ -69,7 +67,6 @@ resource "aws_lambda_function" "process_uploaded_file" {
   role = aws_iam_role.lambda_exec_role.arn
 
   environment {
-    # reading them in lambda main.py
     variables = {
       UPLOAD_BUCKET = aws_s3_bucket.upload_bucket.bucket
       SNS_TOPIC_ARN = aws_sns_topic.devops_accelerator_upload_notify.arn
@@ -95,7 +92,6 @@ resource "aws_lambda_permission" "allow_s3" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.upload_bucket.arn
 }
-
 
 # -----------------------------
 # Frontend Hosting (S3 + CloudFront)
@@ -166,7 +162,6 @@ resource "aws_s3_bucket_cors_configuration" "frontend_cors" {
   }
 }
 
-
 # CloudFront Distribution
 resource "aws_cloudfront_distribution" "frontend_distribution" {
   enabled             = true
@@ -216,7 +211,6 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
 
   depends_on = [aws_s3_bucket_policy.frontend_bucket_policy]
 }
-
 
 # -----------------------------
 # Lambda: Presigned URL API
@@ -269,7 +263,7 @@ resource "aws_iam_role_policy_attachment" "presign_lambda_attach" {
 
 resource "aws_lambda_function" "presign_lambda" {
   function_name = "DevOps-Accelerator-Presign-Handler"
-  role          = aws_iam_role.presign_lambda_role.arn #above created role add to this function
+  role          = aws_iam_role.presign_lambda_role.arn
   handler       = "main.lambda_handler"
   runtime       = "python3.12"
   filename      = "${path.module}/../../backend/generate-presigned-url/lambda.zip"
@@ -308,7 +302,7 @@ resource "aws_apigatewayv2_route" "presign_route" {
 }
 
 resource "aws_cloudwatch_log_group" "apigw_logs" {
-  name              = "/aws/apigateway/presign-api" #name of log group- check in cloud watch
+  name              = "/aws/apigateway/presign-api"
   retention_in_days = 7
 }
 
