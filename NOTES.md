@@ -20,6 +20,10 @@
 
 ![CloudFront](images/cloudfront-concepts.png)
 
+## Step by Step Execution
+
+- Clone  Repo: https://github.com/sonam-niit/Devops-Capstone-June-2025
+
 ## Create Bucket for Remote Backend
 
 ```bash
@@ -51,6 +55,7 @@ zip -r lambda.zip .
 
 ## Creating pipelines for Backend Frontend and Terraform
 
+- go to your Repository and do below step
 - before that we need to setup some secrets in github Repository
 - you can store then in Repository Secrets
 
@@ -64,3 +69,74 @@ zip -r lambda.zip .
 - IAM -> create user with policy attached (administrator access) -> create User
 - once user created you can see option to generate Access Key
 - click on that select CLI and generate. (make sure you download CSV file)
+
+
+- Once All updates done
+- push the code
+
+- Once you push code on github: your terraform pipeline will executed successfully
+- and you can see all resources generated.
+
+- from that copy Presigned URL:
+- go to index.html
+
+![Url Update in Index.html](images/url-update.png)
+
+- once its updated go to your frontend bucket and upload index.html file there
+
+- once this is saved you can check your terraform output and take cloudfront url to see its working or not
+
+![Outputs of Terraform](images/outputs.png)
+
+- access cloudfrontURL in browser and try to upload image
+
+![Upload Error](images/upload%20error.png)
+
++ Setp 1
+
+- bucket (upload Bucket) --> Permissions --> CORS Policy - add Policy Code
+
+```json
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "PUT",
+            "POST",
+            "DELETE",
+            "HEAD"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": []
+    }
+]
+```
+
+- save the permission
+- If still Getting Error
+
+- AWS Console: APIs
+    - Go to DevOps Accelerator PreSigned APIs
+    - Left side -- protect -- throttling
+    - edit default stage:
+        + burst limit: 100
+        + Rate Limit: 200
+        + Save
+
+
+- Check Email for Subscription Confirmation
+![Confirm Subscription](images/subscription.png)
+
+- try to upload Again
+![upload successful](images/Upload%20Successfull.png)
+
+## Verify
+
+- in email
+- cloudwatch Logs
+- upload bucket and see file uploaded or not
